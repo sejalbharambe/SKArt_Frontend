@@ -1,0 +1,150 @@
+@import url("https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap");
+
+/* * {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+} */
+.home-container {
+  height: 100vh;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  --theme-clr: #fff;
+  font-family: "Mona Sans", sans-serif;
+  background: var(--theme-clr);
+}
+
+
+/* --- main 3D cube --- */
+.inf-grid-hero-container {
+  height: 100vh;
+  width: 100vw;
+  perspective: 1000px;
+  position: relative;
+  --sz: 1800px;
+  --grid-sz: 0;
+  --rev-dis: 0;
+}
+
+.inf-grid-hero-container > div {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+  grid-template-columns: repeat(var(--grid-sz), 1fr);
+  grid-template-rows: repeat(var(--grid-sz), 1fr);
+  gap: 6px;
+}
+
+.inf-grid-hero-container > div > div {
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    #94a4c211 0%,
+    #94a4c211 5%,
+    transparent 5%,
+    transparent 10%
+  );
+  opacity: 0;
+  transition: all 0.4s ease-out;
+}
+
+.inf-grid-hero-container > div > div.loaded {
+  opacity: 1;
+  transform: translate3d(0, 0, -1px);
+}
+
+.inf-grid-hero-container > div > div:hover {
+  border: 4px solid #fff;
+  cursor: pointer;
+}
+
+/* --- face rotations --- */
+.inf-grid-hero-container > .top {
+  top: 0;
+  transform-origin: top center;
+  transform: rotateX(-90deg);
+  height: var(--sz);
+}
+
+.inf-grid-hero-container > .bottom {
+  bottom: 0;
+  transform-origin: bottom center;
+  transform: rotateX(90deg);
+  height: var(--sz);
+}
+
+.inf-grid-hero-container > .left {
+  left: 0;
+  transform-origin: center left;
+  transform: rotateY(90deg);
+  width: var(--sz);
+}
+
+.inf-grid-hero-container > .right {
+  right: 0;
+  transform-origin: center right;
+  transform: rotateY(-90deg);
+  width: var(--sz);
+}
+
+/* --- content --- */
+.content {
+  position: absolute;
+  width: 34%;
+  height: 34%;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  margin-top: 330px;
+  border-radius: 8px;
+  backdrop-filter: blur(3px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 5;
+}
+
+.content h2 {
+  font-size: 3em;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+}
+
+.content p {
+  margin-top: 0.5em;
+  color: #333;
+  font-weight: 500;
+}
+
+.content span {
+  color: orangered;
+}
+
+.content .button {
+  background: #1e1e1e;
+  padding: 6px 42px 8px 42px;
+  border-radius: 12px;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.content .button:hover {
+  box-shadow: inset 0 0 8px 1px #fff, inset 0 0 0 1px #fff;
+}
+
