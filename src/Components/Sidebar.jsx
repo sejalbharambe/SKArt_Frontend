@@ -5,22 +5,39 @@ import {
   PictureOutlined,
   MenuOutlined,
   LoginOutlined,
+  UserOutlined,
+  TeamOutlined,
+  CameraOutlined,
+  StarOutlined,
 } from "@ant-design/icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
-  const user = JSON.parse(localStorage.getItem("user"));
-  const userRole = user?.role || "guest"; // fallback for not logged-in users
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const userRole = user?.role || "guest";
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+
+    const syncUser = () => {
+      const updatedUser = JSON.parse(localStorage.getItem("user"));
+      setUser(updatedUser);
+    };
+
+    window.addEventListener("storage", syncUser);
+    window.addEventListener("userChange", syncUser);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("storage", syncUser);
+      window.removeEventListener("userChange", syncUser);
+    };
   }, []);
 
   message.config({
@@ -33,63 +50,73 @@ const Sidebar = () => {
     if (location.pathname === "/") return "1";
     if (location.pathname.startsWith("/artwork")) return "2";
     if (location.pathname.startsWith("/selectartwork")) return "3";
+    if (location.pathname.startsWith("/masterpieces")) return "8";
+    if (location.pathname.startsWith("/artists")) return "4";
+    if (location.pathname.startsWith("/photography")) return "5";
+    if (location.pathname.startsWith("/allusers")) return "6";
+    if (location.pathname.startsWith("/profile")) return "7";
     return "";
   };
 
-  const handleProtectedNav = (path) => navigate(path);
-
-  const renderMenu = (mode = "horizontal") => {
-    const menuItems = [
-      {
-        key: "1",
-        icon: <HomeOutlined />,
-        label: "Home",
-      },
-      {
-        key: "2",
-        icon: <PictureOutlined />,
-        label: "Artwork",
-      },
-    ];
-
-    // ✅ Only admins can see “Select Artwork”
-    if (userRole === "admin") {
-      menuItems.push({
-        key: "3",
-        label: "Select Artwork",
-      });
-    }
-
-    return (
-      <Menu
-        mode={mode}
-        selectedKeys={[getSelectedKey()]}
-        style={{
-          background: "transparent",
-          borderBottom: "none",
-          flex: 1,
-          justifyContent: mode === "horizontal" ? "flex-end" : "flex-start",
-        }}
-        onClick={({ key }) => {
-          if (isMobile) setDrawerVisible(false);
-          switch (key) {
-            case "1":
-              navigate("/");
-              break;
-            case "2":
-              handleProtectedNav("/artwork");
-              break;
-            case "3":
-              handleProtectedNav("/selectartwork");
-              break;
-            default:
-              break;
-          }
-        }}
-        items={menuItems}
-      />
-    );
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    window.dispatchEvent(new Event("userChange"));
+    setUser(null);
+    message.success("Logged out successfully");
+    navigate("/");
   };
+
+  const handleNav = (path) => {
+    if (isMobile) setDrawerVisible(false);
+    navigate(path);
+  };
+
+  const renderMenu = (mode = "horizontal") => (
+    <Menu
+      mode={mode}
+      selectedKeys={[getSelectedKey()]}
+      style={{
+        background: "transparent",
+        borderBottom: "none",
+        flex: 1,
+        justifyContent: mode === "horizontal" ? "flex-end" : "flex-start",
+      }}
+    >
+      <Menu.Item key="1" icon={<HomeOutlined />} onClick={() => handleNav("/")}>
+        Home
+      </Menu.Item>
+
+      <Menu.Item key="2" icon={<PictureOutlined />} onClick={() => handleNav("/artwork")}>
+        Artwork
+      </Menu.Item>
+
+      <Menu.Item key="8" icon={<StarOutlined />} onClick={() => handleNav("/masterpieces")}>
+        Masterpieces
+      </Menu.Item>
+
+      <Menu.Item key="4" icon={<TeamOutlined />} onClick={() => handleNav("/artists")}>
+        Artists
+      </Menu.Item>
+
+      <Menu.Item key="5" icon={<CameraOutlined />} onClick={() => handleNav("/photography")}>
+        Photography
+      </Menu.Item>
+
+      {userRole === "admin" && (
+        <Menu.Item key="3" icon={<PictureOutlined />} onClick={() => handleNav("/selectartwork")}>
+          Select Artwork
+        </Menu.Item>
+      )}
+
+      <Menu.Item key="6" icon={<UserOutlined />} onClick={() => handleNav("/allusers")}>
+        All Users
+      </Menu.Item>
+
+      <Menu.Item key="7" icon={<UserOutlined />} onClick={() => handleNav("/profile")}>
+        Profile
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <div
@@ -118,24 +145,13 @@ const Sidebar = () => {
       {!isMobile && (
         <>
           <div style={{ flex: 1 }}>{renderMenu("horizontal")}</div>
-
           <div style={{ display: "flex", gap: "10px" }}>
             {!user ? (
-              <Button
-                icon={<LoginOutlined />}
-                onClick={() => navigate("/login")}
-              >
+              <Button icon={<LoginOutlined />} onClick={() => navigate("/login")}>
                 Login
               </Button>
             ) : (
-              <Button
-                danger
-                onClick={() => {
-                  localStorage.removeItem("user");
-                  message.success("Logged out successfully");
-                  navigate("/");
-                }}
-              >
+              <Button danger onClick={handleLogout}>
                 Logout
               </Button>
             )}
@@ -178,10 +194,8 @@ const Sidebar = () => {
                   block
                   danger
                   onClick={() => {
-                    localStorage.removeItem("user");
-                    message.success("Logged out successfully");
+                    handleLogout();
                     setDrawerVisible(false);
-                    navigate("/");
                   }}
                 >
                   Logout

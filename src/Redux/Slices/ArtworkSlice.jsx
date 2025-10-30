@@ -28,6 +28,34 @@ export const fetchArtworks = createAsyncThunk(
     }
 );
 
+//like artwork by id
+export const likeArtworkById = createAsyncThunk(
+    'artwork/likeArtworkById',
+    async (id, {rejectWithValue}) => {
+        try {
+            const response = await ArtworkApi.LikeById(id);
+            return response.data;
+        }
+        catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+//dislike artwork by id
+export const dislikeArtworkById = createAsyncThunk(
+    'artwork/dislikeArtworkById',
+    async (id, {rejectWithValue}) => {
+        try {
+            const response = await ArtworkApi.DislikeById(id);
+            return response.data;
+        }
+        catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
 //post selected artwork
 export const postSelectedArtwork = createAsyncThunk(
     'artwork/postSelectedArtwork',
@@ -119,6 +147,40 @@ const ArtworkSlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(fetchArtworks.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            //like artwork by id
+            .addCase(likeArtworkById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(likeArtworkById.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.data.findIndex(artwork => artwork.id === action.payload.id);
+                if (index !== -1) {
+                    state.data[index] = action.payload;
+                }
+            })
+            .addCase(likeArtworkById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            //dislike artwork by id
+            .addCase(dislikeArtworkById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(dislikeArtworkById.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.data.findIndex(artwork => artwork.id === action.payload.id);
+                if (index !== -1) {
+                    state.data[index] = action.payload;
+                }
+            })
+            .addCase(dislikeArtworkById.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

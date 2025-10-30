@@ -18,6 +18,14 @@ const ArtworkApi = {
         return axiosInstance.post("/api/selected-artworks", payload);
     },
 
+    LikeById: (id) => {
+        return axiosInstance.put(`/api/artworks/${id}/like`);
+    },
+
+    DislikeById: (id) => {
+        return axiosInstance.put(`/api/artworks/${id}/dislike`);
+    },
+
     GetSelectedArtworks: () => {
         return axiosInstance.get("/api/selected-artworks");
     },

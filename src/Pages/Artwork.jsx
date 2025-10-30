@@ -1,7 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input, Select, Card, Row, Col, Empty, message } from "antd";
+import {
+  Button,
+  Input,
+  Select,
+  Card,
+  Row,
+  Col,
+  Empty,
+  message,
+  Space,
+} from "antd";
+import {
+  LikeOutlined, 
+  DislikeOutlined,
+  LikeFilled,
+  DislikeFilled,
+} from "@ant-design/icons";
 import { useDispatch } from "react-redux";
-import { fetchArtworks } from "../Redux/Slices/ArtworkSlice";
+import {
+  fetchArtworks,
+  likeArtworkById,
+  dislikeArtworkById,
+} from "../Redux/Slices/ArtworkSlice";
 import AddArtworkModal from "../Modals/AddArtworkModal";
 import { BASE_URL } from "../Redux/APIs/axiosInstance";
 
@@ -16,9 +36,10 @@ const Artwork = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [userReactions, setUserReactions] = useState({}); // {id: "like" | "dislike"}
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const userRole = user?.role || "guest"; // default fallback
+  const userRole = user?.role || "guest";
 
   const categories = [
     "Portrait",
@@ -31,7 +52,7 @@ const Artwork = () => {
     "Impressionism",
   ];
 
-  // 🔄 Fetch artworks
+  // Fetch artworks
   useEffect(() => {
     dispatch(fetchArtworks())
       .unwrap()
@@ -42,7 +63,7 @@ const Artwork = () => {
       .catch((err) => console.error(err));
   }, [dispatch]);
 
-  // 🔍 Filter logic
+  // Filter logic
   useEffect(() => {
     const filtered = artworks.filter((art) => {
       const matchesSearch =
@@ -55,6 +76,34 @@ const Artwork = () => {
     });
     setFilteredArtworks(filtered);
   }, [searchText, selectedCategory, artworks]);
+
+  //  Like handler
+  const handleLike = (id) => {
+    dispatch(likeArtworkById(id))
+      .unwrap()
+      .then((updated) => {
+        message.success("You liked this artwork!");
+        setArtworks((prev) =>
+          prev.map((art) => (art.id === id ? updated : art))
+        );
+        setUserReactions((prev) => ({ ...prev, [id]: "like" }));
+      })
+      .catch(() => message.error("Error liking artwork"));
+  };
+
+  // Dislike handler
+  const handleDislike = (id) => {
+    dispatch(dislikeArtworkById(id))
+      .unwrap()
+      .then((updated) => {
+        message.success("You disliked this artwork!");
+        setArtworks((prev) =>
+          prev.map((art) => (art.id === id ? updated : art))
+        );
+        setUserReactions((prev) => ({ ...prev, [id]: "dislike" }));
+      })
+      .catch(() => message.error("Error disliking artwork"));
+  };
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -96,7 +145,7 @@ const Artwork = () => {
           </Select>
         </div>
 
-        {/* ✅ Add Artwork Button (only for artist/admin) */}
+        {/* Add Artwork Button (artist/admin only) */}
         {(userRole === "artist" || userRole === "admin") && (
           <Button
             type="primary"
@@ -135,13 +184,55 @@ const Artwork = () => {
                   borderRadius: "10px",
                   boxShadow: "0 4px 8px #FFBDC5",
                   height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
                 }}
               >
-                <h3 style={{ color: "#333", marginBottom: "5px" }}>{art.artName}</h3>
-                <p style={{ fontStyle: "italic", color: "#555", marginBottom: "5px" }}>
-                  {art.artistName}
-                </p>
-                <p style={{ color: "#670626", fontWeight: "bold" }}>{art.category}</p>
+                <div>
+                  <h3 style={{ color: "#333", marginBottom: "5px" }}>
+                    {art.artName}
+                  </h3>
+                  <p
+                    style={{ fontStyle: "italic", color: "#555", marginBottom: "5px" }}
+                  >
+                    {art.artistName}
+                  </p>
+                  <p style={{ color: "#670626", fontWeight: "bold" }}>
+                    {art.category}
+                  </p>
+                </div>
+
+                {/* 👍 Like / 👎 Dislike Buttons */}
+                <Space style={{ marginTop: "10px", justifyContent: "center" }}>
+                  <Button
+                    type="text"
+                    icon={
+                      userReactions[art.id] === "like" ? (
+                        <LikeFilled style={{ color: "green" }} />
+                      ) : (
+                        <LikeOutlined />
+                      )
+                    }
+                    onClick={() => handleLike(art.id)}
+                  >
+                    {art.likes}
+                  </Button>
+
+                  <Button
+                    type="text"
+                    icon={
+                      userReactions[art.id] === "dislike" ? (
+                        <DislikeFilled style={{ color: "red" }} />
+                      ) : (
+                        <DislikeOutlined />
+                      )
+                    }
+                    onClick={() => handleDislike(art.id)}
+                  >
+                    {art.dislikes}
+                  </Button>
+                </Space>
               </Card>
             </Col>
           ))}
