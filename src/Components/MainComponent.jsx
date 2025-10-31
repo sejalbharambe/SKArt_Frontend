@@ -11,12 +11,14 @@ import Masterpieces from "../Pages/Masterpeices";
 import Photography from "../Pages/Photography";
 import Profile from "../Pages/Profile";
 import AllUsers from "../Pages/AllUsers";
+import ArtworkDetail from "../Pages/ArtworkDetail";
 
 const MainComponent = () => {
     return (
         <Routes>
             <Route path="/" element={<Home/>} />
             <Route path="/artwork" element={<PrivateRoute><Artwork /></PrivateRoute>} />
+            <Route path="/artwork/:id" element={<PrivateRoute><ArtworkDetail /></PrivateRoute>} />
             <Route path="/selectartwork" element={<PrivateRoute><SelectArtwork /></PrivateRoute>} />
             {/* <Route path="/register" element={<Register />} /> */}
             {/* <Route path="/login" element={<Login />} /> */}

@@ -11,7 +11,7 @@ import {
   Space,
 } from "antd";
 import {
-  LikeOutlined, 
+  LikeOutlined,
   DislikeOutlined,
   LikeFilled,
   DislikeFilled,
@@ -24,6 +24,7 @@ import {
 } from "../Redux/Slices/ArtworkSlice";
 import AddArtworkModal from "../Modals/AddArtworkModal";
 import { BASE_URL } from "../Redux/APIs/axiosInstance";
+import ArtworkCard from "./ArtworkCard";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -167,73 +168,12 @@ const Artwork = () => {
         <Row gutter={[16, 16]}>
           {filteredArtworks.map((art) => (
             <Col xs={24} sm={12} md={8} lg={6} key={art.id}>
-              <Card
-                hoverable
-                cover={
-                  <img
-                    alt={art.artName}
-                    src={`${BASE_URL}${art.imagePath}`}
-                    style={{
-                      height: "250px",
-                      objectFit: "cover",
-                      borderRadius: "10px 10px 0 0",
-                    }}
-                  />
-                }
-                style={{
-                  borderRadius: "10px",
-                  boxShadow: "0 4px 8px #FFBDC5",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div>
-                  <h3 style={{ color: "#333", marginBottom: "5px" }}>
-                    {art.artName}
-                  </h3>
-                  <p
-                    style={{ fontStyle: "italic", color: "#555", marginBottom: "5px" }}
-                  >
-                    {art.artistName}
-                  </p>
-                  <p style={{ color: "#670626", fontWeight: "bold" }}>
-                    {art.category}
-                  </p>
-                </div>
-
-                {/* 👍 Like / 👎 Dislike Buttons */}
-                <Space style={{ marginTop: "10px", justifyContent: "center" }}>
-                  <Button
-                    type="text"
-                    icon={
-                      userReactions[art.id] === "like" ? (
-                        <LikeFilled style={{ color: "green" }} />
-                      ) : (
-                        <LikeOutlined />
-                      )
-                    }
-                    onClick={() => handleLike(art.id)}
-                  >
-                    {art.likes}
-                  </Button>
-
-                  <Button
-                    type="text"
-                    icon={
-                      userReactions[art.id] === "dislike" ? (
-                        <DislikeFilled style={{ color: "red" }} />
-                      ) : (
-                        <DislikeOutlined />
-                      )
-                    }
-                    onClick={() => handleDislike(art.id)}
-                  >
-                    {art.dislikes}
-                  </Button>
-                </Space>
-              </Card>
+              <ArtworkCard
+                art={art}
+                userReactions={userReactions}
+                handleLike={handleLike}
+                handleDislike={handleDislike}
+              />
             </Col>
           ))}
         </Row>
