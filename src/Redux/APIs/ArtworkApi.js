@@ -14,16 +14,24 @@ const ArtworkApi = {
         return axiosInstance.get("/api/artworks");
     },
 
+    FetchArtworksByCategory: (category) => {
+        return axiosInstance.get(`/api/artworks/category/${category}`);
+    },
+
+    FetchArtworksByUserId: (userId) => {
+        return axiosInstance.get(`/api/artworks/user/${userId}`);
+    },
+
     AddSelectedArtwork: (payload) => {
         return axiosInstance.post("/api/selected-artworks", payload);
     },
 
-    LikeById: (id) => {
-        return axiosInstance.put(`/api/artworks/${id}/like`);
+    LikeById: (id, userId) => {
+        return axiosInstance.put(`/api/artworks/${id}/like/${userId}`);
     },
 
-    DislikeById: (id) => {
-        return axiosInstance.put(`/api/artworks/${id}/dislike`);
+    DislikeById: (id, userId) => {
+        return axiosInstance.put(`/api/artworks/${id}/dislike/${userId}`);
     },
 
     GetSelectedArtworks: () => {

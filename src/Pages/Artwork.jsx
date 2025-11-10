@@ -3,19 +3,11 @@ import {
   Button,
   Input,
   Select,
-  Card,
   Row,
   Col,
   Empty,
   message,
-  Space,
 } from "antd";
-import {
-  LikeOutlined,
-  DislikeOutlined,
-  LikeFilled,
-  DislikeFilled,
-} from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import {
   fetchArtworks,
@@ -23,7 +15,6 @@ import {
   dislikeArtworkById,
 } from "../Redux/Slices/ArtworkSlice";
 import AddArtworkModal from "../Modals/AddArtworkModal";
-import { BASE_URL } from "../Redux/APIs/axiosInstance";
 import ArtworkCard from "./ArtworkCard";
 
 const { Search } = Input;
@@ -37,7 +28,7 @@ const Artwork = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [userReactions, setUserReactions] = useState({}); // {id: "like" | "dislike"}
+  const [userReactions, setUserReactions] = useState({}); // { id: "like" | "dislike" }
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userRole = user?.role || "guest";
@@ -53,81 +44,96 @@ const Artwork = () => {
     "Impressionism",
   ];
 
-  // Fetch artworks
+  // Fetch artworks once
   useEffect(() => {
     dispatch(fetchArtworks())
       .unwrap()
       .then((data) => {
-        setArtworks(data);
-        setFilteredArtworks(data);
+        setArtworks(data || []);
+        setFilteredArtworks(data || []);
       })
-      .catch((err) => console.error(err));
+      .catch(() => message.error("Failed to load artworks"));
   }, [dispatch]);
 
-  // Filter logic
+  // Filter artworks dynamically
   useEffect(() => {
     const filtered = artworks.filter((art) => {
+      const artName = art?.artName?.toLowerCase() || "";
+      const artistName = art?.artistName?.toLowerCase() || "";
+      const category = art?.category || "";
+
       const matchesSearch =
-        art.artName.toLowerCase().includes(searchText.toLowerCase()) ||
-        art.artistName.toLowerCase().includes(searchText.toLowerCase());
+        artName.includes(searchText.toLowerCase()) ||
+        artistName.includes(searchText.toLowerCase());
+
       const matchesCategory = selectedCategory
-        ? art.category === selectedCategory
+        ? category === selectedCategory
         : true;
+
       return matchesSearch && matchesCategory;
     });
+
     setFilteredArtworks(filtered);
   }, [searchText, selectedCategory, artworks]);
 
-  //  Like handler
-  const handleLike = (id) => {
-    dispatch(likeArtworkById(id))
-      .unwrap()
-      .then((updated) => {
-        message.success("You liked this artwork!");
-        setArtworks((prev) =>
-          prev.map((art) => (art.id === id ? updated : art))
-        );
-        setUserReactions((prev) => ({ ...prev, [id]: "like" }));
-      })
-      .catch(() => message.error("Error liking artwork"));
+  // LIKE handler
+  const handleLike = async (id) => {
+    if (!id) return message.error("Invalid artwork ID");
+
+    try {
+      await dispatch(likeArtworkById(id)).unwrap();
+      message.success("You liked this artwork!");
+
+      // re-fetch artworks to get updated counts
+      const data = await dispatch(fetchArtworks()).unwrap();
+      setArtworks(data || []);
+      setFilteredArtworks(data || []);
+      setUserReactions((prev) => ({ ...prev, [id]: "like" }));
+    } catch {
+      message.error("Error liking artwork");
+    }
   };
 
-  // Dislike handler
-  const handleDislike = (id) => {
-    dispatch(dislikeArtworkById(id))
-      .unwrap()
-      .then((updated) => {
-        message.success("You disliked this artwork!");
-        setArtworks((prev) =>
-          prev.map((art) => (art.id === id ? updated : art))
-        );
-        setUserReactions((prev) => ({ ...prev, [id]: "dislike" }));
-      })
-      .catch(() => message.error("Error disliking artwork"));
+  // DISLIKE handler
+  const handleDislike = async (id) => {
+    if (!id) return message.error("Invalid artwork ID");
+
+    try {
+      await dispatch(dislikeArtworkById(id)).unwrap();
+      message.success("You disliked this artwork!");
+
+      // re-fetch artworks to get updated counts
+      const data = await dispatch(fetchArtworks()).unwrap();
+      setArtworks(data || []);
+      setFilteredArtworks(data || []);
+      setUserReactions((prev) => ({ ...prev, [id]: "dislike" }));
+    } catch {
+      message.error("Error disliking artwork");
+    }
   };
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div style={{ padding: "20px" }}>
-      {/* Top bar */}
+    <div style={{ padding: 20 }}>
+      {/* Header Section */}
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "20px",
+          marginBottom: 20,
           flexWrap: "wrap",
-          gap: "10px",
+          gap: 10,
         }}
       >
-        {/* Search + Filter */}
-        <div style={{ display: "flex", gap: "10px", flex: 1, minWidth: "300px" }}>
+        {/* Search & Filter */}
+        <div style={{ display: "flex", gap: 10, flex: 1, minWidth: 300 }}>
           <Search
-            placeholder="Search by Art Name or Artist Name"
+            placeholder="Search by Art or Artist"
             allowClear
-            onSearch={(value) => setSearchText(value)}
+            value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             style={{ flex: 2 }}
           />
@@ -146,25 +152,24 @@ const Artwork = () => {
           </Select>
         </div>
 
-        {/* Add Artwork Button (artist/admin only) */}
-        {(userRole === "artist" || userRole === "admin") && (
+        {/* Add Button */}
+        {/* {(userRole === "artist" || userRole === "admin") && (
           <Button
             type="primary"
             onClick={openModal}
             style={{
               backgroundColor: "#670626",
               borderColor: "#670626",
-              color: "white",
               fontWeight: "bold",
             }}
           >
             + Add Artwork
           </Button>
-        )}
+        )} */}
       </div>
 
-      {/* Artworks Grid */}
-      {filteredArtworks.length > 0 ? (
+      {/* Artwork Grid */}
+      {filteredArtworks && filteredArtworks.length > 0 ? (
         <Row gutter={[16, 16]}>
           {filteredArtworks.map((art) => (
             <Col xs={24} sm={12} md={8} lg={6} key={art.id}>
@@ -173,6 +178,7 @@ const Artwork = () => {
                 userReactions={userReactions}
                 handleLike={handleLike}
                 handleDislike={handleDislike}
+                userId={user?.id}
               />
             </Col>
           ))}
@@ -181,7 +187,7 @@ const Artwork = () => {
         <Empty description="No artworks found" />
       )}
 
-      {/* Modal */}
+      {/* Add Artwork Modal */}
       <AddArtworkModal visible={isModalOpen} onClose={closeModal} />
     </div>
   );

@@ -19,7 +19,7 @@ export const fetchArtworks = createAsyncThunk(
     async (_, {rejectWithValue}) => {
         try {
             const response = await ArtworkApi.GetArtworks();
-            console.log("Fetched Artworks:", response.data);
+            // console.log("Fetched Artworks:", response.data);
             return response.data;
         }
         catch (error) {
@@ -28,32 +28,64 @@ export const fetchArtworks = createAsyncThunk(
     }
 );
 
-//like artwork by id
+//fetch artworks by category 
+export const fetchArtworksByCategory = createAsyncThunk(
+    'artwork/fetchArtworksByCategory',
+    async (category, {rejectWithValue}) => {
+        try{
+            const response = await ArtworkApi.FetchArtworksByCategory(category);
+            console.log("fetched artworks by category: ", response.data);
+            return response.data;
+        }
+        catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+//fetch artworks by user id
+export const fetchArtworksByUserId = createAsyncThunk(
+    'artwork/fetchArtworkByUserId',
+    async (userId, {rejectWithValue}) => {
+        try{
+            const response = await ArtworkApi.FetchArtworksByUserId(userId);
+            console.log("fetched artworks by userid: ", response.data);
+            return response.data;
+        }
+        catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+// like artwork by id
 export const likeArtworkById = createAsyncThunk(
-    'artwork/likeArtworkById',
-    async (id, {rejectWithValue}) => {
-        try {
-            const response = await ArtworkApi.LikeById(id);
-            return response.data;
-        }
-        catch (error) {
-            return rejectWithValue(error.response.data);
-        }
+  'artwork/likeArtworkById',
+  async (id, { rejectWithValue }) => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const userId = user?.userId;
+      const response = await ArtworkApi.LikeById(id, userId);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Error liking artwork");
     }
+  }
 );
 
-//dislike artwork by id
+// dislike artwork by id
 export const dislikeArtworkById = createAsyncThunk(
-    'artwork/dislikeArtworkById',
-    async (id, {rejectWithValue}) => {
-        try {
-            const response = await ArtworkApi.DislikeById(id);
-            return response.data;
-        }
-        catch (error) {
-            return rejectWithValue(error.response.data);
-        }
+  'artwork/dislikeArtworkById',
+  async (id, { rejectWithValue }) => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const userId = user?.userId;
+      const response = await ArtworkApi.DislikeById(id, userId);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Error disliking artwork");
     }
+  }
 );
 
 //post selected artwork
@@ -147,6 +179,34 @@ const ArtworkSlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(fetchArtworks.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            //fetch artworks by category
+            .addCase(fetchArtworksByCategory.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchArtworksByCategory.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(fetchArtworksByCategory.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+             //fetch artworks by userID
+            .addCase(fetchArtworksByUserId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchArtworksByUserId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(fetchArtworksByUserId.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

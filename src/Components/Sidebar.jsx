@@ -48,13 +48,17 @@ const Sidebar = () => {
 
   const getSelectedKey = () => {
     if (location.pathname === "/") return "1";
-    if (location.pathname.startsWith("/artwork")) return "2";
+    if (location.pathname.startsWith("/category/Fine Arts")) return "2";
     if (location.pathname.startsWith("/selectartwork")) return "3";
     if (location.pathname.startsWith("/masterpieces")) return "8";
     if (location.pathname.startsWith("/artists")) return "4";
-    if (location.pathname.startsWith("/photography")) return "5";
+    if (location.pathname.startsWith("/category/Digital and Media Art")) return "5";
     if (location.pathname.startsWith("/allusers")) return "6";
     if (location.pathname.startsWith("/profile")) return "7";
+    if (location.pathname.startsWith("/category/Craft and Design")) return "9";
+    if (location.pathname.startsWith("/category/Cultural and Traditional Art")) return "10";
+    if (location.pathname.startsWith("/category/Decorative and Lifestyle Art")) return "11";
+    if (location.pathname.startsWith("/artwork")) return "12";
     return "";
   };
 
@@ -85,21 +89,53 @@ const Sidebar = () => {
       <Menu.Item key="1" icon={<HomeOutlined />} onClick={() => handleNav("/")}>
         Home
       </Menu.Item>
+{/* 
+      <Menu.SubMenu key="work" icon={<PictureOutlined />} title="Work">
+        <Menu.Item key="2" icon={<PictureOutlined />} onClick={() => handleNav("/artwork")}>
+          Fine Arts
+        </Menu.Item>
+        <Menu.Item key="9" icon={<PictureOutlined />} onClick={() => handleNav("/craftart")}>
+          Craft & Design
+        </Menu.Item>
+        <Menu.Item key="5" icon={<CameraOutlined />} onClick={() => handleNav("/photography")}>
+          Digital & Media Art
+        </Menu.Item>
+        <Menu.Item key="10" icon={<CameraOutlined />} onClick={() => handleNav("/traditional")}>
+          Cultural & Traditional Art
+        </Menu.Item>
+        <Menu.Item key="11" icon={<CameraOutlined />} onClick={() => handleNav("/decorative")}>
+          Decorative & LifeStyle Art
+        </Menu.Item>
+      </Menu.SubMenu> */}
 
-      <Menu.Item key="2" icon={<PictureOutlined />} onClick={() => handleNav("/artwork")}>
-        Artwork
-      </Menu.Item>
+      <Menu.SubMenu key="work" icon={<PictureOutlined />} title="Work">
+      <Menu.Item key="12" icon={<PictureOutlined />} onClick={() => handleNav("/artwork")}>
+          All Artworks
+        </Menu.Item>
+  <Menu.Item key="2" onClick={() => handleNav("/category/Fine Arts")}>
+    Fine Arts
+  </Menu.Item>
+  <Menu.Item key="9" onClick={() => handleNav("/category/Craft and Design")}>
+    Craft & Design
+  </Menu.Item>
+  <Menu.Item key="5" onClick={() => handleNav("/category/Digital and Media Art")}>
+    Digital & Media Art
+  </Menu.Item>
+  <Menu.Item key="10" onClick={() => handleNav("/category/Cultural and Traditional Art")}>
+    Cultural & Traditional Art
+  </Menu.Item>
+  <Menu.Item key="11" onClick={() => handleNav("/category/Decorative and Lifestyle Art")}>
+    Decorative & Lifestyle Art
+  </Menu.Item>
+</Menu.SubMenu>
+
 
       <Menu.Item key="8" icon={<StarOutlined />} onClick={() => handleNav("/masterpieces")}>
         Masterpieces
-      </Menu.Item>
+      </Menu.Item> 
 
       <Menu.Item key="4" icon={<TeamOutlined />} onClick={() => handleNav("/artists")}>
         Artists
-      </Menu.Item>
-
-      <Menu.Item key="5" icon={<CameraOutlined />} onClick={() => handleNav("/photography")}>
-        Photography
       </Menu.Item>
 
       {userRole === "admin" && (
@@ -207,42 +243,99 @@ const Sidebar = () => {
       )}
 
       {/* Custom Styles */}
-      <style>
-        {`
-          .ant-menu-horizontal {
-            border-bottom: none !important;
-          }
-          .ant-menu-horizontal .ant-menu-item::after {
-            display: none !important;
-          }
-          .ant-menu-horizontal .ant-menu-item-selected {
-            color: #670626 !important;
-            border-bottom: 3px solid #670626 !important;
-          }
-          .ant-menu-horizontal .ant-menu-item-selected .anticon {
-            color: #670626 !important;
-          }
-          .ant-menu-horizontal .ant-menu-item:hover {
-            color: #ffbdc5 !important;
-            border-bottom: 3px solid #ffbdc5;
-          }
-          .ant-menu-horizontal .ant-menu-item:hover .anticon {
-            color: #ffbdc5 !important;
-          }
-          .ant-menu-inline .ant-menu-item-selected,
-          .ant-menu-inline .ant-menu-item:hover {
-            color: #670626 !important;
-          }
-          .ant-menu-inline .ant-menu-item-selected .anticon,
-          .ant-menu-inline .ant-menu-item:hover .anticon {
-            color: #670626 !important;
-          }
-          .ant-menu-horizontal .ant-menu-item:hover, 
-          .ant-menu-inline .ant-menu-item:hover {
-            background-color: transparent !important;
-          }
-        `}
-      </style>
+    <style>
+  {`
+    .ant-menu-horizontal {
+      border-bottom: none !important;
+    }
+
+    .ant-menu-horizontal .ant-menu-item::after {
+      display: none !important;
+    }
+
+    .ant-menu-horizontal .ant-menu-item-selected {
+      color: #670626 !important;
+      border-bottom: 3px solid #670626 !important;
+    }
+
+    .ant-menu-horizontal .ant-menu-item-selected .anticon {
+      color: #670626 !important;
+    }
+
+    .ant-menu-horizontal .ant-menu-item:hover {
+      color: #ffbdc5 !important;
+      border-bottom: 3px solid #ffbdc5 !important;
+    }
+
+    .ant-menu-horizontal .ant-menu-item:hover .anticon {
+      color: #ffbdc5 !important;
+    }
+
+    /* Hover + open submenu title */
+    .ant-menu-horizontal .ant-menu-submenu:hover > .ant-menu-submenu-title,
+    .ant-menu-horizontal .ant-menu-submenu-active > .ant-menu-submenu-title {
+      color: #ffbdc5 !important;
+      border-bottom: 3px solid #ffbdc5 !important;
+      background: transparent !important;
+    }
+
+    /* Active submenu title */
+    .ant-menu-horizontal .ant-menu-submenu-selected > .ant-menu-submenu-title {
+      color: #670626 !important;
+      border-bottom: 3px solid #670626 !important;
+    }
+
+    .ant-menu-horizontal .ant-menu-submenu-title .anticon {
+      color: inherit !important;
+    }
+
+    .ant-menu-inline .ant-menu-item-selected,
+    .ant-menu-inline .ant-menu-item:hover {
+      color: #670626 !important;
+    }
+
+    .ant-menu-inline .ant-menu-item-selected .anticon,
+    .ant-menu-inline .ant-menu-item:hover .anticon {
+      color: #670626 !important;
+    }
+
+    .ant-menu-horizontal .ant-menu-item:hover, 
+    .ant-menu-inline .ant-menu-item:hover {
+      background-color: transparent !important;
+    }
+
+    /* Override submenu hover and selected colors */
+    .ant-menu-sub .ant-menu-item:hover,
+    .ant-menu-sub .ant-menu-item-active,
+    .ant-menu-sub .ant-menu-item-selected {
+      background-color: #fff0f3 !important;
+      color: #670626 !important;
+    }
+
+    .ant-menu-sub .ant-menu-item:hover .anticon,
+    .ant-menu-sub .ant-menu-item-active .anticon,
+    .ant-menu-sub .ant-menu-item-selected .anticon {
+      color: #670626 !important;
+    }
+
+    /* ✅ Themed underline behavior for submenu (Work) */
+    .ant-menu-horizontal .ant-menu-submenu::after {
+      border-bottom: none !important;
+      transition: all 0.3s ease;
+    }
+
+    .ant-menu-horizontal .ant-menu-submenu:hover::after,
+    .ant-menu-horizontal .ant-menu-submenu-active::after {
+      border-bottom: 3px solid #ffbdc5 !important; /* soft pink on hover */
+    }
+
+    .ant-menu-horizontal .ant-menu-submenu-open::after,
+    .ant-menu-horizontal .ant-menu-submenu-selected::after {
+      border-bottom: 3px solid #670626 !important; /* dark pink when active */
+    }
+  `}
+</style>
+
     </div>
   );
 };

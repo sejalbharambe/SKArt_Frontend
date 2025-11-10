@@ -8,23 +8,23 @@ import Login from "../Pages/Login";
 import PrivateRoute from "./PrivateRoute";
 import Artists from "../Pages/Artists";
 import Masterpieces from "../Pages/Masterpeices";
-import Photography from "../Pages/Photography";
 import Profile from "../Pages/Profile";
 import AllUsers from "../Pages/AllUsers";
 import ArtworkDetail from "../Pages/ArtworkDetail";
+import CategoryArtworks from "../Pages/CategoryArtworks";
 
 const MainComponent = () => {
-    return (
+    return ( 
         <Routes>
             <Route path="/" element={<Home/>} />
             <Route path="/artwork" element={<PrivateRoute><Artwork /></PrivateRoute>} />
             <Route path="/artwork/:id" element={<PrivateRoute><ArtworkDetail /></PrivateRoute>} />
+            <Route path="/category/:category" element={<PrivateRoute><CategoryArtworks /></PrivateRoute>} />
             <Route path="/selectartwork" element={<PrivateRoute><SelectArtwork /></PrivateRoute>} />
             {/* <Route path="/register" element={<Register />} /> */}
             {/* <Route path="/login" element={<Login />} /> */}
             <Route path="/artists" element={<PrivateRoute><Artists /></PrivateRoute>} />
             <Route path="/masterpieces" element={<PrivateRoute><Masterpieces /></PrivateRoute>} />
-            <Route path="/photography" element={<PrivateRoute><Photography /></PrivateRoute>} />
             <Route path="/allusers" element={<PrivateRoute><AllUsers /></PrivateRoute>} />
             <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         </Routes>
