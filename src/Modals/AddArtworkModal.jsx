@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Form, Input, Select, Upload, Button, InputNumber, Switch } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { postArtwork } from "../Redux/Slices/ArtworkSlice";
 
 const { Option } = Select;
@@ -12,17 +12,18 @@ const AddArtworkModal = ({ visible, onClose }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [preview, setPreview] = useState(null);
+  const [isSold, setIsSold] = useState(false);
+  const { currentUser } = useSelector((state) => state.auth);
 
-  // ✅ get user from localStorage
+  // get user from localStorage
   const user = JSON.parse(localStorage.getItem("user"));
-  console.log(user?.userId);
 
   const categories = [
     "Fine Arts",
     "Craft and Design",
-    "Digital And Media Art",
-    "Cultural/Traditional Art",
-    "Decorative/LifeStyle Art",
+    "Digital and Media Art",
+    "Cultural and Traditional Art",
+    "Decorative and LifeStyle Art"
   ];
 
   const handleUploadChange = ({ fileList }) => {
@@ -44,14 +45,15 @@ const AddArtworkModal = ({ visible, onClose }) => {
 
       const payload = new FormData();
       payload.append("artName", values.artName);
-      payload.append("artistName", user?.artistSignature || ""); // ✅ auto from localStorage
+      // payload.append("artistName", user?.artistSignature || "");
+      payload.append("artistName", currentUser?.name);
       payload.append("category", values.category);
       payload.append("size", values.size);
       payload.append("paintedOn", values.paintedOn);
       payload.append("price", values.price);
-      payload.append("sold", values.sold);
-      payload.append("description", values.description); // ✅ added description
-      payload.append("userId", user?.userId); // ✅ from localStorage
+      payload.append("sold", isSold);
+      payload.append("description", values.description);
+      payload.append("userId", user?.userId); // from localStorage
       payload.append("imageFile", fileList[0].originFileObj);
 
       dispatch(postArtwork(payload))
@@ -73,6 +75,7 @@ const AddArtworkModal = ({ visible, onClose }) => {
       onCancel={onClose}
       onOk={handleSubmit}
       okText="Upload"
+      width={700}
     >
       <Form form={form} layout="vertical">
         {/* Image Upload */}
@@ -152,18 +155,24 @@ const AddArtworkModal = ({ visible, onClose }) => {
           name="price"
           rules={[{ required: true, message: "Please enter price" }]}
         >
-          <InputNumber style={{ width: "100%" }} min={0} placeholder="Enter price" />
+          <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+            <InputNumber style={{ width: "100%" }} min={0} placeholder="Enter price" />
+
+            {/* Sold Circle Indicator */}
+            <div
+              onClick={() => setIsSold(!isSold)}
+              style={{
+                width: "20px",
+                height: "20px",
+                borderRadius: "50%",
+                backgroundColor: isSold ? "green" : "red",
+                cursor: "pointer",
+              }}
+              title={isSold ? "Sold" : "Not Sold"}
+            ></div>
+          </div>
         </Form.Item>
 
-        {/* Sold Status */}
-        <Form.Item
-          label="Sold"
-          name="sold"
-          valuePropName="checked"
-          tooltip="Toggle if the artwork is already sold"
-        >
-          <Switch />
-        </Form.Item>
       </Form>
     </Modal>
   );

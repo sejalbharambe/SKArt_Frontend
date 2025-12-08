@@ -57,6 +57,11 @@ const ArtworkApi = {
     EditActiveArtwork: (id, payload) => {
         return axiosInstance.put(`/api/selected-artworks/active/${id}`, payload);
     },
+
+    //fetch likes by user id
+    GetLikesByUserId: (userId) => {
+        return axiosInstance.get(`/api/artworks/likes/${userId}`);
+    }
 }
 
 export default ArtworkApi;

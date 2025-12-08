@@ -34,14 +34,11 @@ const Artwork = () => {
   const userRole = user?.role || "guest";
 
   const categories = [
-    "Portrait",
-    "Landscape",
-    "Abstract",
-    "Modern Art",
-    "Surrealism",
-    "Realism",
-    "Pop Art",
-    "Impressionism",
+     "Fine Arts",
+    "Craft and Design",
+    "Digital and Media Art",
+    "Cultural and Traditional Art",
+    "Decorative and LifeStyle Art"
   ];
 
   // Fetch artworks once
@@ -131,7 +128,7 @@ const Artwork = () => {
         {/* Search & Filter */}
         <div style={{ display: "flex", gap: 10, flex: 1, minWidth: 300 }}>
           <Search
-            placeholder="Search by Art or Artist"
+            placeholder="Search by Art name or Artist"
             allowClear
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}

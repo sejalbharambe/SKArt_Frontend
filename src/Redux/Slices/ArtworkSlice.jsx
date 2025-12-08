@@ -145,6 +145,19 @@ export const editActiveArtwork = createAsyncThunk(
     }
 );
 
+//fetch likes by user id
+export const fetchLikesByUserId = createAsyncThunk(
+    'artwork/fetchLikesByUserId',
+    async ({userId}, {rejectWithValue}) => {
+        try {
+            const response = await ArtworkApi.GetLikesByUserId(userId);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
 const ArtworkSlice = createSlice({
     name: 'artwork',
     initialState: {
@@ -301,6 +314,20 @@ const ArtworkSlice = createSlice({
             })
             .addCase(editActiveArtwork.rejected, (state, action) => {
                 state.loading = false;
+                state.error = action.payload;
+            })
+
+            //fetch likes by user id
+            .addCase(fetchLikesByUserId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })  
+            .addCase(fetchLikesByUserId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(fetchLikesByUserId.rejected, (state, action) => {
+                state.loading = false;  
                 state.error = action.payload;
             });
 

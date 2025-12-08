@@ -2,13 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Menu, Drawer, Button, message } from "antd";
 import {
   HomeOutlined,
-  PictureOutlined,
   MenuOutlined,
   LoginOutlined,
+  LogoutOutlined,
   UserOutlined,
   TeamOutlined,
   CameraOutlined,
-  StarOutlined,
+  PictureOutlined,
+  AppstoreOutlined,
+  BgColorsOutlined,
+  ExperimentOutlined,
+  SkinOutlined,
+  HighlightOutlined,
 } from "@ant-design/icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -63,6 +68,7 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
+    sessionStorage.removeItem("current_login_banner");
     localStorage.removeItem("user");
     window.dispatchEvent(new Event("userChange"));
     setUser(null);
@@ -89,50 +95,61 @@ const Sidebar = () => {
       <Menu.Item key="1" icon={<HomeOutlined />} onClick={() => handleNav("/")}>
         Home
       </Menu.Item>
-{/* 
-      <Menu.SubMenu key="work" icon={<PictureOutlined />} title="Work">
-        <Menu.Item key="2" icon={<PictureOutlined />} onClick={() => handleNav("/artwork")}>
-          Fine Arts
-        </Menu.Item>
-        <Menu.Item key="9" icon={<PictureOutlined />} onClick={() => handleNav("/craftart")}>
-          Craft & Design
-        </Menu.Item>
-        <Menu.Item key="5" icon={<CameraOutlined />} onClick={() => handleNav("/photography")}>
-          Digital & Media Art
-        </Menu.Item>
-        <Menu.Item key="10" icon={<CameraOutlined />} onClick={() => handleNav("/traditional")}>
-          Cultural & Traditional Art
-        </Menu.Item>
-        <Menu.Item key="11" icon={<CameraOutlined />} onClick={() => handleNav("/decorative")}>
-          Decorative & LifeStyle Art
-        </Menu.Item>
-      </Menu.SubMenu> */}
 
       <Menu.SubMenu key="work" icon={<PictureOutlined />} title="Work">
-      <Menu.Item key="12" icon={<PictureOutlined />} onClick={() => handleNav("/artwork")}>
+        <Menu.Item
+          key="12"
+          icon={<AppstoreOutlined />}
+          onClick={() => handleNav("/artwork")}
+        >
           All Artworks
         </Menu.Item>
-  <Menu.Item key="2" onClick={() => handleNav("/category/Fine Arts")}>
-    Fine Arts
-  </Menu.Item>
-  <Menu.Item key="9" onClick={() => handleNav("/category/Craft and Design")}>
-    Craft & Design
-  </Menu.Item>
-  <Menu.Item key="5" onClick={() => handleNav("/category/Digital and Media Art")}>
-    Digital & Media Art
-  </Menu.Item>
-  <Menu.Item key="10" onClick={() => handleNav("/category/Cultural and Traditional Art")}>
-    Cultural & Traditional Art
-  </Menu.Item>
-  <Menu.Item key="11" onClick={() => handleNav("/category/Decorative and Lifestyle Art")}>
-    Decorative & Lifestyle Art
-  </Menu.Item>
-</Menu.SubMenu>
 
+        <Menu.Item
+          key="2"
+          icon={<BgColorsOutlined />}
+          onClick={() => handleNav("/category/Fine Arts")}
+        >
+          Fine Arts
+        </Menu.Item>
 
-      <Menu.Item key="8" icon={<StarOutlined />} onClick={() => handleNav("/masterpieces")}>
+        <Menu.Item
+          key="9"
+          icon={<SkinOutlined />}
+          onClick={() => handleNav("/category/Craft and Design")}
+        >
+          Craft & Design
+        </Menu.Item>
+
+        <Menu.Item
+          key="5"
+          icon={<CameraOutlined />}
+          onClick={() => handleNav("/category/Digital and Media Art")}
+        >
+          Digital & Media Art
+        </Menu.Item>
+
+        <Menu.Item
+          key="10"
+          icon={<ExperimentOutlined />}
+          onClick={() => handleNav("/category/Cultural and Traditional Art")}
+        >
+          Cultural & Traditional Art
+        </Menu.Item>
+
+        <Menu.Item
+          key="11"
+          icon={<HighlightOutlined />}
+          onClick={() => handleNav("/category/Decorative and Lifestyle Art")}
+        >
+          Decorative & Lifestyle Art
+        </Menu.Item>
+
+      </Menu.SubMenu>
+
+      {/* <Menu.Item key="8" icon={<StarOutlined />} onClick={() => handleNav("/masterpieces")}>
         Masterpieces
-      </Menu.Item> 
+      </Menu.Item> */}
 
       <Menu.Item key="4" icon={<TeamOutlined />} onClick={() => handleNav("/artists")}>
         Artists
@@ -144,9 +161,11 @@ const Sidebar = () => {
         </Menu.Item>
       )}
 
-      <Menu.Item key="6" icon={<UserOutlined />} onClick={() => handleNav("/allusers")}>
-        All Users
-      </Menu.Item>
+      {userRole === "admin" && (
+        <Menu.Item key="6" icon={<UserOutlined />} onClick={() => handleNav("/allusers")}>
+          All Users
+        </Menu.Item>
+      )}
 
       <Menu.Item key="7" icon={<UserOutlined />} onClick={() => handleNav("/profile")}>
         Profile
@@ -171,9 +190,23 @@ const Sidebar = () => {
       }}
     >
       {/* Logo */}
-      <div style={{ fontSize: "20px", fontWeight: "bold", marginRight: "30px" }}>
+      {/* <div style={{ fontSize: "20px", fontWeight: "bold", marginRight: "30px" }}>
         <Link to="/" style={{ textDecoration: "none", color: "black" }}>
           SKArt
+        </Link>
+      </div> */}
+
+      <div style={{ marginRight: "30px", display: "flex", alignItems: "center" }}>
+        <Link to="/" style={{ textDecoration: "none" }}>
+          <img
+            src="/Logo.png"
+            alt="SKArt Logo"
+            style={{
+              height: "50px",
+              width: "auto",
+              objectFit: "contain",
+            }}
+          />
         </Link>
       </div>
 
@@ -187,7 +220,7 @@ const Sidebar = () => {
                 Login
               </Button>
             ) : (
-              <Button danger onClick={handleLogout}>
+              <Button icon={< LogoutOutlined />} danger onClick={handleLogout}>
                 Logout
               </Button>
             )}
@@ -243,8 +276,8 @@ const Sidebar = () => {
       )}
 
       {/* Custom Styles */}
-    <style>
-  {`
+      <style>
+        {`
     .ant-menu-horizontal {
       border-bottom: none !important;
     }
@@ -334,7 +367,7 @@ const Sidebar = () => {
       border-bottom: 3px solid #670626 !important; /* dark pink when active */
     }
   `}
-</style>
+      </style>
 
     </div>
   );

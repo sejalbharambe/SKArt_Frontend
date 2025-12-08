@@ -5,6 +5,7 @@ import Sidebar from "./Components/Sidebar";
 import MainComponent from "./Components/MainComponent";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
+import ArtistRegistration from "./Pages/ArtistRegistration";
 
 const { Content, Footer } = Layout;
 
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/artist-register/:registerId" element={<ArtistRegistration />} />
 
         {/* Default layout with sidebar */}
         <Route
@@ -36,7 +38,7 @@ function App() {
                 >
                   <MainComponent />
                 </Content>
-                <Footer style={{ textAlign: "center" }}>SKArt ©2025</Footer>
+                <Footer style={{ textAlign: "center" }}>PURE SK Art ©2025</Footer>
               </Layout>
             </Layout>
           }

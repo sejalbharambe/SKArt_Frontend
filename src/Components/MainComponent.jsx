@@ -12,6 +12,7 @@ import Profile from "../Pages/Profile";
 import AllUsers from "../Pages/AllUsers";
 import ArtworkDetail from "../Pages/ArtworkDetail";
 import CategoryArtworks from "../Pages/CategoryArtworks";
+import ArtistProfile from "../Pages/ArtistProfile";
 
 const MainComponent = () => {
     return ( 
@@ -24,6 +25,7 @@ const MainComponent = () => {
             {/* <Route path="/register" element={<Register />} /> */}
             {/* <Route path="/login" element={<Login />} /> */}
             <Route path="/artists" element={<PrivateRoute><Artists /></PrivateRoute>} />
+            <Route path="/artist/:id" element={<PrivateRoute><ArtistProfile /></PrivateRoute>} />
             <Route path="/masterpieces" element={<PrivateRoute><Masterpieces /></PrivateRoute>} />
             <Route path="/allusers" element={<PrivateRoute><AllUsers /></PrivateRoute>} />
             <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />

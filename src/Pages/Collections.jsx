@@ -17,10 +17,12 @@ const Collections = () => {
         if (storedUser && storedUser.userId) {
           setLoading(true);
           const response = await dispatch(fetchArtworksByUserId(storedUser.userId));
-          if (response.payload) {
+          if (response.payload && Array.isArray(response.payload)) {
             setArtworks(response.payload);
+          } else if (response.payload && response.payload.data && Array.isArray(response.payload.data)) {
+            setArtworks(response.payload.data);
           } else {
-            setArtworks([]);
+            setArtworks([]); // fallback when backend sends only a message
           }
         } else {
           message.error("User not found in local storage");

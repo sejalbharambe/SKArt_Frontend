@@ -31,13 +31,24 @@ const Home = () => {
       {/* <div id="back-btn">SK Art Gallery</div> */}
 
       <div className="content">
+        <div style={{ marginRight: "10px", display: "flex", alignItems: "center" }}>
+          <img
+            src="/Logo.png"
+            alt="SKArt Logo"
+            style={{
+              height: "60px",
+              width: "auto",
+              objectFit: "contain",
+            }}
+          />
+        </div>
         <h1 style={{
           fontSize: "2.5rem",
           color: "#ff80ab", // soft pink
-          marginBottom: "0.5rem",
+          marginBottom: "1px",
           fontWeight: "700"
         }}>
-          Welcome to SK Art Gallery
+          Welcome to PURE SK Art
         </h1>
         <p style={{
           color: "#f8bbd0", // light pink
@@ -52,7 +63,7 @@ const Home = () => {
           style={{
             backgroundColor: "#8b0000", // claret
             color: "#fff",
-            padding: "12px 30px",
+            padding: "8px 20px",
             borderRadius: "25px",
             cursor: "pointer",
             fontWeight: "bold",

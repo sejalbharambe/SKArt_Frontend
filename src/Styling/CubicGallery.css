@@ -99,15 +99,15 @@ body {
 /* --- content --- */
 .content {
   position: absolute;
-  width: 34%;
-  height: 34%;
+  width: 36%;
+  height: 35%;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
   margin: auto;
-  margin-top: 330px;
-  border-radius: 8px;
+  margin-top: 310px;
+  border-radius: 1px;
   backdrop-filter: blur(3px);
   display: flex;
   flex-direction: column;
@@ -125,7 +125,7 @@ body {
 }
 
 .content p {
-  margin-top: 0.5em;
+  margin-top: 1px;
   color: #333;
   font-weight: 500;
 }
@@ -136,7 +136,7 @@ body {
 
 .content .button {
   background: #1e1e1e;
-  padding: 6px 42px 8px 42px;
+  padding: 5px 40px 5px 40px;
   border-radius: 12px;
   color: #fff;
   text-decoration: none;

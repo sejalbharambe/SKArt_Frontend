@@ -12,19 +12,24 @@ import { BASE_URL } from "../Redux/APIs/axiosInstance";
 const ArtworkCard = ({ art, userReactions, handleLike, handleDislike }) => {
   const navigate = useNavigate();
 
+  // Navigate to artwork details page
   const handleCardClick = () => {
     navigate(`/artwork/${art.id}`);
   };
 
+  // Stop propagation so clicking like/dislike doesn't trigger card click
   const handleLikeClick = (e) => {
-    e.stopPropagation(); // prevents card click
+    e.stopPropagation();
     handleLike(art.id);
   };
 
   const handleDislikeClick = (e) => {
-    e.stopPropagation(); // prevents card click
+    e.stopPropagation();
     handleDislike(art.id);
   };
+
+  // Determine current reaction for this artwork
+  const reaction = userReactions[art.id] || "none";
 
   return (
     <Card
@@ -35,7 +40,8 @@ const ArtworkCard = ({ art, userReactions, handleLike, handleDislike }) => {
           alt={art.artName}
           src={`${BASE_URL}${art.imagePath}`}
           style={{
-            height: "250px",
+            height: "260px",
+            width: "100%",
             objectFit: "cover",
             borderRadius: "10px 10px 0 0",
           }}
@@ -48,24 +54,44 @@ const ArtworkCard = ({ art, userReactions, handleLike, handleDislike }) => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
+        paddingBottom: "1px",
       }}
     >
-      <div>
-        <h3 style={{ color: "#333", marginBottom: "5px" }}>{art.artName}</h3>
-        <p style={{ fontStyle: "italic", color: "#555", marginBottom: "5px" }}>
-          {art.artistName}
+      {/* ---------- TEXT SECTION ---------- */}
+      <div style={{ marginTop: "1px" }}>
+        {/* Art Name + Price */}
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <h3 style={{ color: "#333", marginBottom: "5px" }}>{art.artName}</h3>
+          <span style={{ color: "green", fontWeight: "bold", fontSize: "18px" }}>
+            ₹{art.price}
+          </span>
+        </div>
+
+        {/* Artist */}
+        <p style={{ fontStyle: "italic", color: "#555", margin: 0 }}>
+          By: {art.artistName || "Unknown"}
         </p>
-        <p style={{ color: "#670626", fontWeight: "bold" }}>{art.category}</p>
+
+        {/* Painted On */}
+        <p style={{ margin: "3px 0", color: "#333" }}>
+          Painted On: <b>{art.paintedOn}</b>
+        </p>
+
+        {/* Size */}
+        <p style={{ margin: "3px 0", color: "#333" }}>
+          Size: <b>{art.size} inches</b>
+        </p>
       </div>
 
+      {/* ---------- LIKE / DISLIKE SECTION ---------- */}
       <Space style={{ marginTop: "10px", justifyContent: "center" }}>
         <Button
           type="text"
           icon={
-            userReactions[art.id] === "like" ? (
-              <LikeFilled style={{ color: "green" }} />
+            reaction === "like" ? (
+              <LikeFilled style={{ color: "green", fontSize: "22px" }} />
             ) : (
-              <LikeOutlined />
+              <LikeOutlined style={{ fontSize: "22px" }} />
             )
           }
           onClick={handleLikeClick}
@@ -76,10 +102,10 @@ const ArtworkCard = ({ art, userReactions, handleLike, handleDislike }) => {
         <Button
           type="text"
           icon={
-            userReactions[art.id] === "dislike" ? (
-              <DislikeFilled style={{ color: "red" }} />
+            reaction === "dislike" ? (
+              <DislikeFilled style={{ color: "red", fontSize: "22px" }} />
             ) : (
-              <DislikeOutlined />
+              <DislikeOutlined style={{ fontSize: "22px" }} />
             )
           }
           onClick={handleDislikeClick}

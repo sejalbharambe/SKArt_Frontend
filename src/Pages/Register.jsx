@@ -2,18 +2,17 @@ import React, { useState } from "react";
 import { Form, Input, Button, Select, Typography, message, Card, Row, Col } from "antd";
 import { useDispatch } from "react-redux";
 import { registerUser, verifyEmail } from "../Redux/Slices/AuthSlice";
-import { useNavigate } from "react-router-dom"; //  added import
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 const { Option } = Select;
 
 const Register = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // initialize navigate
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [otpVisible, setOtpVisible] = useState(false);
   const [userId, setUserId] = useState(null);
-
   const [formData, setFormData] = useState({
     name: "",
     username: "",
@@ -21,12 +20,9 @@ const Register = () => {
     password: "",
     phoneNumber: "",
     role: "user",
-    artistSignature: "",
   });
-
   const [otp, setOtp] = useState("");
 
-  // Handle OTP Request (registerUser)
   const handleSendOtp = async () => {
     if (!formData.email) {
       message.warning("Enter your email first");
@@ -35,10 +31,7 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const payload = { ...formData };
-      if (payload.role !== "artist") delete payload.artistSignature;
-
-      const result = await dispatch(registerUser(payload)).unwrap();
+      const result = await dispatch(registerUser(formData)).unwrap();
       message.success(result.message || "OTP sent successfully to your email.");
       if (result.userId) {
         setUserId(result.userId);
@@ -51,7 +44,6 @@ const Register = () => {
     }
   };
 
-  // Handle Final Registration (verifyEmail)
   const handleRegister = async () => {
     if (!otpVisible) {
       message.warning("Please verify your email first");
@@ -61,9 +53,14 @@ const Register = () => {
     setLoading(true);
     try {
       const result = await dispatch(verifyEmail({ userId, otp })).unwrap();
-
       message.success(result.message || "Registration successful!");
-      navigate("/login"); // ✅ redirect after successful verification
+
+      //  Redirect logic
+      if (formData.role === "artist") {
+        navigate(`/artist-register/${userId}`);
+      } else {
+        navigate("/login");
+      }
     } catch (err) {
       message.error(err?.message || "Verification failed. Try again.");
     } finally {
@@ -93,27 +90,24 @@ const Register = () => {
         </Title>
 
         <Form layout="vertical" onFinish={handleRegister}>
-          <Form.Item label="Full Name" name="name" rules={[{ required: true, message: "Name is required" }]}>
+          <Form.Item label="Full Name" name="name" rules={[{ required: true }]}>
             <Input
-              placeholder="Enter full name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
           </Form.Item>
 
-          <Form.Item label="Username" name="username" rules={[{ required: true, message: "Username is required" }]}>
+          <Form.Item label="Username" name="username" rules={[{ required: true }]}>
             <Input
-              placeholder="Enter username"
               value={formData.username}
               onChange={(e) => setFormData({ ...formData, username: e.target.value })}
             />
           </Form.Item>
 
-          <Form.Item label="Email" name="email" rules={[{ required: true, type: "email", message: "Enter valid email" }]}>
+          <Form.Item label="Email" name="email" rules={[{ required: true, type: "email" }]}>
             <Row gutter={8}>
               <Col span={16}>
                 <Input
-                  placeholder="Enter email address"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
@@ -127,26 +121,24 @@ const Register = () => {
           </Form.Item>
 
           {otpVisible && (
-            <Form.Item label="OTP" name="otp" rules={[{ required: true, message: "Enter the OTP sent to email" }]}>
+            <Form.Item label="OTP" name="otp" rules={[{ required: true }]}>
               <Input
-                placeholder="Enter 6-digit OTP"
+                placeholder="Enter OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
               />
             </Form.Item>
           )}
 
-          <Form.Item label="Password" name="password" rules={[{ required: true, message: "Password is required" }]}>
+          <Form.Item label="Password" name="password" rules={[{ required: true }]}>
             <Input.Password
-              placeholder="Enter password"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
           </Form.Item>
 
-          <Form.Item label="Phone Number" name="phoneNumber" rules={[{ required: true, message: "Phone number is required" }]}>
+          <Form.Item label="Phone Number" name="phoneNumber" rules={[{ required: true }]}>
             <Input
-              placeholder="Enter phone number"
               value={formData.phoneNumber}
               onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
             />
@@ -159,19 +151,8 @@ const Register = () => {
             >
               <Option value="user">Normal User</Option>
               <Option value="artist">Artist</Option>
-              {/* <Option value="admin">Admin</Option> */}
             </Select>
           </Form.Item>
-
-          {formData.role === "artist" && (
-            <Form.Item label="Artist Signature" name="artistSignature">
-              <Input
-                placeholder="Enter your artist signature"
-                value={formData.artistSignature}
-                onChange={(e) => setFormData({ ...formData, artistSignature: e.target.value })}
-              />
-            </Form.Item>
-          )}
 
           <Form.Item>
             <Button type="primary" htmlType="submit" block loading={loading}>
@@ -179,13 +160,11 @@ const Register = () => {
             </Button>
           </Form.Item>
 
-          {/*  Redirect link to Login */}
           <div style={{ textAlign: "center", marginTop: 8 }}>
-            <span>Already have an account?{" "}
-              <a onClick={() => navigate("/login")} style={{ color: "#670626", fontWeight: 500 }}>
-                Login
-              </a>
-            </span>
+            Already have an account?{" "}
+            <a onClick={() => navigate("/login")} style={{ color: "#670626" }}>
+              Login
+            </a>
           </div>
         </Form>
       </Card>
